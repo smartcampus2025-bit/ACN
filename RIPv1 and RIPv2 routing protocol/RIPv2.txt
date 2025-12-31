@@ -1,0 +1,102 @@
+R1 Config
+➢ conf t
+➢ int s1/0
+➢ ip address 10.0.0.1 255.0.0.0
+➢ clock rate 64000
+➢ no shut
+➢ exit
+➢ int fa0/0
+➢ ip address 192.168.1.1 255.255.255.0
+➢ no shut
+➢ exit
+
+PC1 Config
+➢ ip 192.168.1.10 255.255.255.0 192.168.1.1
+PC2 Config
+➢ ip 192.168.1.11 255.255.255.0 192.168.1.1
+
+R2 Config
+➢ conf t
+➢ int s1/0
+➢ ip address 10.0.0.2 255.0.0.0
+➢ clock rate 64000
+➢ no shut
+➢ exit
+➢ int fa0/0
+➢ ip address 192.168.2.1 255.255.255.0
+➢ no shut
+➢ exit
+
+PC3 Config
+➢ ip 192.168.2.10 255.255.255.0 192.168.2.1
+PC4 Config
+➢ ip 192.168.2.11 255.255.255.0 192.168.2.1
+
+R1 Routing v2
+➢ conf t
+➢ router rip
+➢ version 2
+➢ network 10.0.0.0
+➢ network 192.168.1.0
+➢ network 192.168.2.0
+➢ end
+➢ conf t
+➢ do sh ip route
+
+R2 Routing v2
+➢ conf t
+➢ router rip
+➢ version 2
+➢ network 10.0.0.0
+➢ network 192.168.1.0
+➢ network 192.168.2.0
+➢ end
+➢ conf t
+➢ do sh ip route
+
+PING
+PC1 -> PC2, PC3, PC4
+ping 192.168.1.11
+ping 192.168.2.10
+ping 192.168.2.11
+
+PC2-> PC1, PC3, PC4
+ping 192.168.1.10
+ping 192.168.2.10
+ping 192.168.2.11
+
+PC3 -> PC1, PC2, PC4
+ping 192.168.1.10
+ping 192.168.2.11
+ping 192.168.1.11
+
+PC4 -> PC1, PC2, PC3
+ping 192.168.1.10
+ping 192.168.2.10
+ping 192.168.1.11
+
+R1 -> PC1, PC2
+ping 192.168.1.10
+ping 192.168.1.11
+
+R2 -> PC3, PC4
+ping 192.168.2.10
+ping 192.168.2.11
+
+R1 -> R2
+ping 10.0.0.1
+R2 -> R1
+ping 10.0.0.1
+
+On Router R2, execute the debug IP rip command to check the RIPv2 configuration and you will see a log
+R2(config)# do debug ip rip
+
+Do after debug
+R2(config)# do undebug ip rip
+
+We can use the Wireshark program to verify RIPv2.Start the Wireshark program I in between Serial
+communication line. We can view the RIP V2 (224.0.0.9) outpu
+Step 1:-  right click on router 2
+Step 2:-  Click on Start capture
+In this screen we can see RIPv2 output on the destination 224.0.0.
+

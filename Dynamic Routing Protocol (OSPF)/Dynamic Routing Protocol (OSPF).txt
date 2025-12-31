@@ -1,0 +1,54 @@
+R1 Config
+R1#enable
+R1#config t
+R1(config)#int s1/0
+R1(config-if)#ip address 10.1.1.1 255.255.255.0
+R1(config-if)#no shut
+R1(config-if)#int f0/0
+R1(config-if)#ip address 192.168.5.1 255.255.255.0
+R1(config-if)#no shut
+R1(config-if)#exit
+
+Enabling OSPF
+R1(config)### Enabling OSPF
+R1(config)#router ospf 10
+R1(config-router)#network 192.168.5.0 0.0.0.255 area 0
+R1(config-router)#network 10.1.1.0 0.0.0.3 area 0
+R1(config-router)#exit
+R1(config)#exit
+R1#show ip route
+R1#### Show ospf neighbor
+R1#show ip ospf neighbor
+
+R2 Config
+R2#enable
+R2#config t
+R2(config)#int s1/0
+R2(config-if)#ip address 10.1.1.2 255.255.255.0
+R2(config-if)#no shut
+R2(config-if)#int f0/0
+R2(config-if)#ip address 192.168.10.1 255.255.255.0
+R2(config-if)#no shut
+R2(config-if)#exit
+
+Enabling OSPF
+R2(config)### Enabling OSPF
+R2(config)#router ospf 10
+R2(config-router)#network 192.168.10.0 0.0.0.255 area 0
+R2(config-router)#network 10.1.1.0 0.0.0.3 area 0
+R2(config-router)#exit
+R2(config)#exit
+R2#show ip route
+R2### Show ospf neighbor
+R2#show ip ospf neighbor
+
+PC1 Config
+PC1> ip 192.168.5.10 255.255.255.0 192.168.5.1
+PC2 Config
+PC2> ip 192.168.10.10 255.255.255.0 192.168.10.1
+
+
+We can use the Wireshark program to verify OSPF. Start the Wireshark program I in between Serial
+communication line. We can view the output from the Screen. After clicking on Start capture the next
+screen opens
+

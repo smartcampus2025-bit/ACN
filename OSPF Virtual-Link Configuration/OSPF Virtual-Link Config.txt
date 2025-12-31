@@ -1,0 +1,94 @@
+R1 >>> IP and Network configuration
+R1#enable
+R1#config t
+R1(config)#ip cef
+R1(config)#int lo0
+R1(config-if)#ip address 1.1.1.1 255.255.255.0
+R1(config-if)#exit
+R1(config)#int f0/0
+R1(config-if)#ip address 192.168.12.1 255.255.255.0
+R1(config-if)#no shut
+R1(config-if)#duplex auto
+R1(config-if)#speed auto
+R1(config-if)#exit
+R1(config)#end
+
+R2 >>> IP and Network configuration
+R2#enable
+R2#conf t
+R2(config)#ip cef
+R2(config)#int lo0
+R2(config-if)#exit
+R2(config)#int f0/0
+R2(config-if)#ip address 192.168.12.2 255.255.255.0
+R2(config-if)#no shut
+R2(config-if)#duplex auto
+R2(config-if)#speed auto
+R2(config-if)#exit
+R2(config)#int f0/1
+R2(config-if)#ip address 192.168.23.2 255.255.255.0
+R2(config-if)#no shut
+R2(config-if)#duplex auto
+R2(config-if)#speed auto
+R2(config-if)#exit
+R2(config)#end
+
+R3 >>> IP and Network configuration
+R3#enable
+R3#config t
+R3(config)#ip cef
+R3(config)#int lo0
+R3(config-if)#ip address 172.16.0.1 255.255.255.0
+R3(config-if)#exit
+R3(config)#int lo1
+R3(config-if)#ip address 172.16.1.1 255.255.255.0
+R3(config-if)#exit
+R3(config)#int lo2
+R3(config-if)#ip address 172.16.2.1 255.255.255.0
+R3(config-if)#exit
+R3(config)#int lo3
+R3(config-if)#ip address 172.16.3.1 255.255.255.0
+R3(config-if)#exit
+R3(config)#int f0/0
+R3(config-if)#ip address 192.168.23.3 255.255.255.0
+R3(config-if)#no shut
+R3(config-if)#duplex auto
+R3(config-if)#speed auto
+R3(config-if)#exit
+R3(config)#end
+
+SHOW IP ROUTE
+R1#show ip route
+R2#show ip route
+R3#show ip route
+
+OSPF Configuration >>>
+R1(config)#router ospf 1
+R1(config-router)#network 1.1.1.0 0.0.0.255 area 0
+R1(config-router)#network 192.168.12.0 0.0.0.255 area 1
+R1(config-router)#exit
+R1(config)#end
+R2(config)#router ospf 1
+R2(config-router)#network 192.168.12.0 0.0.0.255 area 1
+R2(config-router)#network 192.168.12.0 0.0.0.255 area 1
+R3(config)#router ospf 1
+R3(config-router)#network 192.168.23.0 0.0.0.255 area 2
+R3(config-router)#exit
+R3(config)#
+
+Showing IP OSPF Neighbor
+R1#show ip ospf neighbor
+R2#show ip ospf neighbor
+R3#show ip ospf neighbor
+
+Virtual Linking
+R1#config t
+R1(config)#router ospf 1
+R1(config-router)#area 1 virtual-link 192.168.23.2
+R2#config t
+R2(config)#router ospf 1
+R2(config-router)#area 1 virtual-link 1.1.1.1
+
+R1#ping 192.168.23.3
+R1#show ip ospf virtual-links
+R2#show ip ospf virtual-links

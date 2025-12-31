@@ -1,0 +1,121 @@
+R1 >>>> IP and Network Configuration
+R1#conf t
+R1(config)#int s0/0
+R1(config-if)#ip address 12.12.12.1 255.255.255.252
+R1(config-if)#clock rate 64000
+R1(config-if)#no shut
+R1(config-if)#exit
+R1(config)#int s0/1
+R1(config-if)#ip address 13.13.13.1 255.255.255.252
+R1(config-if)#clock rate 64000
+R1(config-if)#no shut
+R1(config-if)#exit
+R1(config)#int lo0
+R1(config-if)#ip address 1.1.1.1 255.255.255.255
+R1(config-if)#no shut
+R1(config-if)#end
+R1#conf t
+R1(config)#router bgp 123
+R1(config-router)#bgp log-neighbor-changes
+R1(config-router)#neighbor 12.12.12.2 remote-as 123
+R1(config-router)#neighbor 13.13.13.2 remote-as 123
+R1(config-router)#network 1.1.1.1 mask 255.255.255.255
+R1(config-router)#no auto-summary
+R1(config-router)#end
+
+R2 >>>> IP and Network Configuration
+R2#conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+R2(config)#int s0/0
+R2(config-if)#ip address 12.12.12.2 255.255.255.252
+R2(config-if)#clock rate 64000
+R2(config-if)#no shut
+R2(config-if)#exit
+R2#conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+R2(config)#int s0/1
+R2(config-if)#ip address 24.24.24.1 255.255.255.252
+R2(config-if)#clock rate 64000
+R2(config-if)#no shut
+R2(config-if)#exit
+R2#conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+R2(config)#int lo0
+R2(config-if)#ip address 2.2.2.2 255.255.255.255
+R2(config-if)#no shut
+R2(config-if)#exit
+R2#conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+R2(config)#router bgp 123
+R2(config-router)#bgp log-neighbor-changes
+R2(config-router)#neighbor 12.12.12.1 remote-as 123
+R2(config-router)#neighbor 12.12.12.1 next-hop-self	
+R2(config-router)#neighbor 24.24.24.2 remote-as 4
+R2(config-router)#network 2.2.2.2 mask 255.255.255.255
+R2(config-router)#no auto-summary
+R2(config-router)#end
+
+R3 >>>> IP and Network Configuration
+R3#conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+R3(config)#int s0/0
+R3(config-if)#ip address 34.34.34.1 255.255.255.252
+R3(config-if)#clock rate 64000
+R3(config-if)#no shut
+R3(config-if)#exit
+R3#conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+R3(config)#int s0/1
+R3(config-if)#ip address 13.13.13.2 255.255.255.252
+R3(config-if)#clock rate 64000
+R3(config-if)#no shut
+R3(config-if)#exit
+R3# conf t
+R3(config)#int lo0
+R3(config-if)#ip address 3.3.3.3 255.255.255.255
+R3(config-if)#no shut
+R3(config-if)#exit
+R3#conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+R3(config)#router bgp 123
+R3(config-router)#bgp log-neighbor-changes
+R3(config-router)#neighbor 13.13.13.1 remote-as 123
+R3(config-router)#neighbor 13.13.13.1 next-hop-self
+R3(config-router)#neighbor 34.34.34.34.2 remote-as 4
+R3(config-router)#network 3.3.3.3 mask 255.255.255.255
+R3(config-router)#bgp default local-preference 300
+R3(config-router)#no auto-summary
+R3(config-router)#end
+
+R4 >>>> IP and Network Configuration
+R4#conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+R4(config)#int s0/0
+R4(config-if)#ip address 34.34.34.2 255.255.255.252
+R4(config-if)#clock rate 64000
+R4(config-if)#no shut
+R4(config-if)#exit
+R4#conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+R4(config)#int s0/1
+R4(config-if)#ip address 24.24.24.2 255.255.255.252
+R4(config-if)#clock rate 64000
+R4(config-if)#no sh
+R4#conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+R4(config)#int lo0
+R4(config-if)#ip address 4.4.4.4 255.255.255.255
+R4(config-if)#no shut
+R4(config-if)#exit
+R4(config)#end
+R4#conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+R4(config)#router bgp 4
+R4(config-router)#bgp log-neighbor-changes
+R4(config-router)#neighbor 24.24.24.1 remote-as 123
+R4(config-router)#neighbor 34.34.34.1 remote-as
+R4(config-router)#neighbor 34.34.34.1 remote-as 123
+R4(config-router)#network 4.4.4.4 mask 255.255.255.255
+R4(config-router)#no auto-summary
+R4(config-router)#end
+

@@ -1,0 +1,79 @@
+R1 >>>> IP and Network Configuration
+R1#enable
+R1#config t
+R1(config)#int f0/1
+R1(config-if)#ip address 192.168.0.1 255.255.255.0
+R1(config-if)#no shut
+R1(config)#router bgp 65300
+R1(config-router)#neighbor 192.168.0.2 remote-as 65300
+R1(config-router)#exit
+
+
+
+
+Check Images for Border1 Router
+Border1 >>>> IP and Network Configuration
+Border1#enable
+Border1#config t
+Border1(config)#int f0/1
+Border1(config-if)#ip address 192.168.0.2 255.255.255.0
+Border1(config-if)#no shut
+Border1(config-if)#int f0/0
+Border1(config-if)#ip address 10.0.0.1 255.255.255.0
+Border1(config-if)#no shut
+Border1(config-if)#router bgp 65300
+Border1(config-router)#neighbor 10.0.0.2 remote-as 65400
+Border1(config-router)#neighbor 192.168.0.1 remote-as 65300
+Border1(config-router)#network 192.168.0.0 mask 255.255.255.0
+Border1(config-router)#exit
+
+
+Check Images for Border2 Router
+Broder2 >>>> IP and Network Config
+Border2#enable
+Border2#config t
+Border2(config)#int f0/0
+Border2(config-if)#ip address 10.0.0.2 255.255.255.0
+Border2(config-if)#no shut
+Border2(config-if)#int f0/1
+Border2(config-if)#ip address 192.168.100.2 255.255.255.0
+Border2(config-if)#no shut
+Border2(config-if)#router bgp 65400
+Border2(config-router)#neighbor 10.0.0.1 remote-as 65300
+Border2(config-router)#neighbor 192.168.100.1 remote-as 65400
+Border2(config-router)#network 192.168.100.0 mask 255.255.255.0
+Border2(config-router)#exit
+
+R2 >>>> IP and Network Configuration
+R2#enable
+R2#config t
+R2(config)#int f0/1
+R2(config-if)#ip address 192.168.100.1 255.255.255.0
+R2(config-if)#no shut
+R2(config-if)#router bgp 65400
+R2(config-router)#neighbor 192.168.100.2 remote-as 65400
+R2(config-router)#exit
+
+Show ip bgp neighbors
+Border1#show ip bgp neighbor
+Border2#show ip bgp neighbor
+R1#show ip route
+
+As we can see on R1 we don’t have external route to network 192.168.100.0/24. This is because BORDER_2, which
+is an external router, routing updates sent have address 10.0.0.1 as source ip address, but in this case R1 doesn’t have
+any idea how to get 10.0.0.0 network. BGP on router R1 doesn't put in routing table a route to 192.168.100.0/24. To
+overcome this we have to add on router BORDER_1 this command: neighbor 192.168.0.1 next-hop-self, this
+command will change source ip address of routing updates sent to router R1
+
+Border1(config-router)#neighbor 192.168.0.1 next-hop-self
+Border2(config-router)#neighbor 192.168.100.1 next-hop-self
+
+So, let’s see again routing table on each router
+R1#show ip route
+R2#show ip route
+
+Then, ping from R1 to R2
+R1#ping 192.168.100.1
+R2#ping 192.168.0.1
+
+

@@ -1,0 +1,53 @@
+IP and Interface Configuration
+R1 >>>>
+R1(config)#### Interface towards S1 and PC1
+R1#config t
+R1(config)#int f0/0
+R1(config-if)#ip address 192.168.1.1 255.255.255.0
+R1(config-if)#no shut
+R1(config-if)#exit
+R1(config)### Interface towards R2
+R1(config)#int s1/0
+R1(config-if)#ip address 10.0.0.1 255.255.255.0
+R1(config-if)#no shut
+R1(config-if)#exit
+
+R2 >>>>
+R2#conf t
+R2(config)### interface towards S2 and PC2
+R2(config)#int f0/0
+R2(config-if)#ip address 192.168.2.1 255.255.255.0
+R2(config-if)#no shut
+R2(config-if)#exit
+R2(config)### Interface towards R1
+R2(config)#int s1/0
+R2(config-if)#ip address 10.0.0.2 255.255.255.0
+R2(config-if)#no shut
+R2(config-if)#exit
+
+Manually set an IP on PC1
+PC1> ip 192.168.1.10 255.255.255.0 192.168.1.1
+
+Manually set an IP on PC2
+PC2> ip 192.168.2.10 255.255.255.0 192.168.2.1
+
+Enabling RIP Routing
+R1(config)#router rip
+R1(config-router)#network 192.168.1.0
+R1(config-router)#network 10.0.0.0
+R1(config-router)#no auto-summary
+R1(config-router)#end
+R1#show ip route
+
+R2(config)#### Enabling RIP Routing
+R2(config)#router rip
+R2(config-router)#network 192.168.2.0
+R2(config-router)#network 10.0.0.0
+R2(config-router)#no auto-summary
+R2(config-router)#end
+R2#show ip route
+
+Ping the End Devices (PCs)
+PC1> ping 192.168.2.10
+PC2> ping 192.168.1.10
+

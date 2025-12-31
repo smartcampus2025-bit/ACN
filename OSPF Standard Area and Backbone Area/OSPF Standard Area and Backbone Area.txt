@@ -1,0 +1,113 @@
+IP configuration of the routers R1, R2, R3, R4 as follows:
+R1 >>>> IP and Network Configuration
+R1#enable
+R1#config t
+R1(config)#int f0/0
+R1(config-if)#ip address 192.168.11.1 255.255.255.0
+R1(config-if)#no shut
+R1(config-if)#exit
+R1(config)#int f0/1
+R1(config-if)#ip address 192.168.12.1 255.255.255.0
+R1(config-if)#no shut
+R1(config-if)#exit
+
+R2 >>>> IP and Network Configuration
+R2#enable
+R2#config t
+R2(config)#int f0/0
+R2(config-if)#ip address 192.168.11.2 255.255.255.0
+R2(config-if)#no shut
+R2(config-if)#exit
+R2(config)#int f0/1
+R2(config-if)#ip address 192.168.13.1 255.255.255.0
+R2(config-if)#no shut
+R2(config-if)#exit
+
+R3 >>>> IP and Network Configuration
+R3#enable
+R3#config t
+R3(config)#int loopback 0
+R3(config-if)#ip address 3.3.3.3 255.255.255.0
+R3(config-if)#no shut
+R3(config-if)#exit
+R3(config)#int f0/1
+R3(config-if)#ip address 192.168.12.2 255.255.255.0
+R3(config-if)#no shut
+R3(config-if)#exit
+
+R4 >>>> IP and Network Configuration
+R4#enable
+R4#config t
+R4(config)#int loopback 0
+R4(config-if)#ip address 4.4.4.4 255.255.255.0
+R4(config-if)#no shut
+R4(config-if)#exit
+R4(config)#int f0/1
+R4(config-if)#ip address 192.168.13.2 255.255.255.0
+R4(config-if)#no shut
+R4(config-if)#exit
+
+Configure the ospf for every router as follows:
+R1 and R2 for the backbone area:
+
+R1(config)#router ospf 1
+R1(config-router)#network 192.168.11.0 0.0.0.255 area 0
+R1(config-router)#exit
+R2(config)#router ospf 1
+R2(config-router)#network 192.168.11.0 0.0.0.255 area 0
+R2(config-router)#exit
+
+configure R1 and R3 for area 1:
+R1(config)#router ospf 1
+R1(config-router)#network 192.168.12.0 0.0.0.255 area 1
+R1(config-router)#exit
+
+R3(config)#router ospf 1
+R3(config-router)#network 3.3.3.3 0.0.0.255 area 1
+R3(config-router)#network 192.168.12.0 0.0.0.255 area 1
+R3(config-router)#exit
+
+Configure R2 and R4 for area 2:
+R2(config)#router ospf 1
+R2(config-router)#network 192.168.13.0 0.0.0.255 area 2
+R2(config-router)#exit
+
+R4(config)#router ospf 1
+R4(config-router)#network 192.168.13.0 0.0.0.255 area 2
+R4(config-router)#network 4.4.4.4 0.0.0.0 area 2
+R4(config-router)#exit
+
+Verification of the network
+Check the OSPF neighbors
+R1(config)#do show ip ospf neighbor
+R1 has formed a neighbor adjacency with R2 and R3.
+R2(config)#do show ip ospf neighbor
+
+R2 has formed neighbor adjacencies with R1 and R4.
+The show ip ospf neighbor command, however, doesn’t tell anything about the areas that are used, So we check it
+using the show ip ospf neighbor detail command.
+R2(config)#do show ip ospf neighbor detail
+
+Above you can see that interface FastEthernet0/0 is in area 0 and FastEthernet0/1 is in area 2.
+Another good command to find area information is show ip protocols:
+R2(config)#do show ip protocols
+
+Above you can see which networks belong to which area:
+Network 192.168.11.0 in area 0.
+Network 192.168.13.0 in area 2.
+
+Check the routing tables:
+R1(config)#do show ip route ospf
+Console we see three OSPF entries. The first one is for 3.3.3.3/32, the loopback interface of R3. R1 has also learned
+about 4.4.4.4/32 and 192.168.24.0/24. These two entries show up as O IA since they are inter-area routes.
+
+R2(config)#do show ip route ospf
+Console we see that R2 has learned about 3.3.3.3/32 and 192.168.13.0/24 which area inter-area routes. 4.4.4.4/32 is an
+intra-area route
+
+R3(config)#do show ip route ospf
+Everything that R3 has learned is from another area, that’s why we only see inter-area routes here
+
+R4(config)#do show ip route ospf
+Just to be sure, let’s try a quick ping between R3 and R4 to prove that our multi-area OSPF configuration is working:
+R3#do ping 4.4.4.4 source 3.3.3.3

@@ -1,0 +1,131 @@
+IP and Interface Configuration of R1,R2,R3,R4
+R1 >>>> IP and Network Configuration
+R1#enable
+R1#config t
+R1(config)#int f0/0
+R1(config-if)#ip address 192.168.12.1 255.255.255.0
+R1(config-if)#no shut
+R1(config-if)#exit
+R1(config)#int f0/1
+R1(config-if)#ip address 192.168.13.1 255.255.255.0
+R1(config-if)#no shut
+R1(config-if)#exit
+R1(config)#int loopback 0
+R1(config-if)#ip address 1.1.1.1 255.255.255.0
+R1(config-if)#no shut
+R1(config-if)#end
+
+R2 >>>> IP and Network Configuration
+R2#config t
+R2(config)#int f0/0
+R2(config-if)#ip address 192.168.12.2 255.255.255.0
+R2(config-if)#no shut
+R2(config-if)#exit
+R2(config)#int f0/1
+R2(config-if)#ip address 192.168.24.2 255.255.255.0
+R2(config-if)#no shut
+R2(config-if)#exit
+R2(config)#int loopback 0
+R2(config-if)#ip address 2.2.2.2 255.255.255.0
+R2(config-if)#no shut
+R2(config-if)#end
+
+R3 >>>> IP and Network Configuration
+R3#enable
+R3#config t
+R3(config)#int f0/1
+R3(config-if)#ip address 192.168.13.3 255.255.255.0
+R3(config-if)#no shut
+R3(config-if)#exit
+R3(config)#int f0/0
+R3(config-if)#ip address 192.168.34.3 255.255.255.0
+R3(config-if)#no shut
+R3(config-if)#exit
+R3(config)#int loopback 0
+R3(config-if)#ip address 3.3.3.3 255.255.255.0
+R3(config-if)#no shut
+R3(config-if)#end
+
+R4 >>>> IP and Network Configuration
+R4#enable
+R4#config t
+R4(config)#int f0/0
+R4(config-if)#ip address 192.168.34.4 255.255.255.0
+R4(config-if)#no shut
+R4(config-if)#exit
+R4(config)#int f0/1
+R4(config-if)#ip address 192.168.24.4 255.255.255.0
+R4(config-if)#no shut
+R4(config-if)#exit
+R4(config)#int loopback 0
+R4(config-if)#ip address 4.4.4.4 255.255.255.0
+R4(config-if)#no shut
+R4(config-if)#end
+
+Show IP route
+R1#show ip route
+R2#show ip route
+R3#show ip route
+R4#show ip route
+
+Show ip int brief:
+R1#show ip int brief
+R2#show ip int brief
+R3#show ip int brief
+R4#show ip int brie
+
+BGP Configuration
+R1#config t
+R1(config)#router bgp 1
+R1(config-router)#neighbor 192.168.12.2 remote-as 2
+R1(config-router)#neighbor 192.168.13.3 remote-as 3
+R1(config-router)#redistribute connected
+R1(config-router)#end
+
+R2#config t
+R2(config)#router bgp 2
+R2(config-router)#neighbor 192.168.12.1 remote-as 1
+R2(config-router)#neighbor 192.168.24.4 remote-as 1
+R2(config-router)#neighbor 192.168.24.4 remote-as 4
+R2(config-router)#redistribute connected
+R2(config-router)#end
+
+R3#config t
+R3(config)#router bgp 3
+R3(config-router)#neighbor 192.168.13.1 remote-as 1
+R3(config-router)#neighbor 192.168.34.4 remote-as 4
+R3(config-router)#redistribute connected
+R3(config-router)#end
+
+R4#config t
+R4(config)#router bgp 4
+R4(config-router)#neighbor 192.168.24.2 remote-as 2
+R4(config-router)#neighbor 192.168.34.3 remote-as 3
+R4(config-router)#redistribute connected
+R4(config-router)#end
+
+Creating a route map
+R3#config t
+R3(config)#route-map MED-TEST permit
+R3(config-route-map)#match ip address 1
+R3(config-route-map)#set metric 500
+R3(config-route-map)#exit
+R3(config)#route-map MED-TEST permit 20
+R3(config-route-map)#end
+R3#show route-map
+
+Creating a access list
+R3#config t
+R3(config)#access-list 1 permit host 4.4.4.4
+R3(config)#end
+R3#show access-list
+
+Applying the created route-map to bgp configuration
+R3#config t
+R3(config)#router bgp 3
+R3(config-router)#neighbor 192.168.13.1 route-map MED-TEST out
+R3(config-router)#end
+R3#show ip bgp
+
+R1#clear ip bgp * soft in
+R1#show ip bgp
